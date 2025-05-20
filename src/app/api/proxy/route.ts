@@ -3,27 +3,29 @@ import { NextRequest, NextResponse } from 'next/server';
 /*** /api/proxy?url=targetUrl ... ***/
 // 외부 API 요청을 Next.js 서버가 대신 중계 (Server to Server)
 export const GET = async (req: NextRequest) => {
-    const targetUrl = req.nextUrl.searchParams.get('url');
-
-    if (!targetUrl) {
-        return NextResponse.json({ error: 'Missing target URL' }, { status: 400 });
-    }
-
     try {
-        const res = await fetch(targetUrl);
-        const contentType = res.headers.get('content-type') || 'application/octet-stream';
-        const data = await res.arrayBuffer();
+        const rawUrl = req.url;
+        const urlMatch = rawUrl.match(/url=(.+)/);
 
-        return new NextResponse(data, {
+        if (!urlMatch || !urlMatch[1]) {
+            return NextResponse.json({ error: 'Missing target URL' }, { status: 400 });
+        }
+
+        // `url=` 뒤의 값을 그대로 복원 (디코딩까지)
+        const encodedTargetUrl = urlMatch[1];
+        const decodedTargetUrl = decodeURIComponent(encodedTargetUrl);
+
+        const res = await fetch(decodedTargetUrl);
+        const contentType = res.headers.get('content-type') || 'application/octet-stream';
+        const buffer = await res.arrayBuffer();
+
+        return new NextResponse(buffer, {
             status: res.status,
             headers: {
                 'Content-Type': contentType,
             },
         });
     } catch (e: any) {
-        return NextResponse.json({
-            error: 'Proxy request failed',
-            detail: e.message,
-        }, { status: 500 });
+        return NextResponse.json({ error: 'Proxy failed', detail: e.message }, { status: 500 });
     }
 };

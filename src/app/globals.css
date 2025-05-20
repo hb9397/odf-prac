@@ -31,3 +31,22 @@ html, body {
   padding: 0;
   overflow: hidden;
 }
+/* 피처 속성 정보 조회 css */
+#featureInfo>div,#featureInfo>div>div{
+  padding : 10px;
+}
+#featureInfo>div>div{
+  overflow-x : auto;
+}
+#featureInfo h5.title,featureInfo h6.title{
+  font-weight : bold;
+  margin-bottom: 5px;
+}
+#featureInfo table{
+  border-collapse: collapse;
+}
+#featureInfo td {
+  border: 1px solid #949494 !important;
+  padding: 3px !important;
+  text-align: center;
+}
