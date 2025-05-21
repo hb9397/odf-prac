@@ -1,10 +1,10 @@
 'use client';
 
 import React, {useEffect, useRef, useState} from 'react';
-import {useBaroEMap} from "@/app/components/baro-e-map-provider";
+import {useMap} from "@/app/components/map-provider";
 
 const VworldWmsLayers = () => {
-    const { baroEMap } = useBaroEMap();
+    const { baroEMap } = useMap();
 
     /*const layerList = {
         경계_시군구: "lt_c_adsigg_info",
