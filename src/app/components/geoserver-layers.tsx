@@ -8,73 +8,95 @@ import {useMap} from "@/app/components/map-provider";
 const GeoserverLayers = () => {
     const {baroEMap} = useMap();
 
-    const [examLayer0001, setExamLayer0001] = useState<any | null>(createGeoserverLayer(geoserverLayerList.odfPracYp0001, 'wms'));
-    const [examLayer0002, setExamLayer0002] = useState<any | null>(createGeoserverLayer(geoserverLayerList.odfPracYp0002, 'wfs'));
+    /*** geoserverLayerList 의 모든 레이어 key 가져오기 ***/
+    const layerKeys = Object.keys(geoserverLayerList);
 
-    const [isCheckedExamLayer0001, setIsCheckedExamLayer0001] = useState<boolean>(false);
-    const [isCheckedExamLayer0002, setIsCheckedExamLayer0002] = useState<boolean>(false);
+    /*** checked 의 모든 layerKey 에 접근해서 key 맞게 setChecked  ***/
+    const onChangeCheckBox = (key: string, type: 'wms' | 'wfs') => {
+        setChecked(prev => ({
+            ...prev, // -> 객체의 이전 상태 복사
+            [key]: { ...prev[key], // -> 위에서 복사한 객체가 가지고 있는 내부 객체에 대해서도 이전 상태 복사
+                [type]: !prev[key][type] // -> 이제 현재상태를 실제 값에 대해 접근해서 변경
+            }
+        }));
+    };
 
+    /*** <img> src 범례 가져오기 ***/
+    const getLegendUrl = (layerName: any) =>
+        `/api/proxy?url=http://localhost:18080/geoserver/odf-prac/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=${layerName}`;
 
+    /*** TODO geoserverLayerList 객체에서 배열로 변경해서 Object.fromEntries 제거 ***/
+
+    /*** geoserverLayerList 에 존재하는 모든 레이어 layerKey: { wms: {...layerInfo}, wfs: {...layerInfo} }쌍의 객체로 만들기 ***/
+    const [layers, setLayers] = useState(() =>
+        Object.fromEntries(
+            layerKeys.map(key => [
+                key,
+                {
+                    wms: createGeoserverLayer(geoserverLayerList[key].layer, 'wms'),
+                    wfs: createGeoserverLayer(geoserverLayerList[key].layer, 'wfs'),
+                }
+            ])
+        )
+    );
+
+    /*** geoserverLayerList 에 존재하는 모든 레이어의 체크박스의 상태 관리 객체를 layerKey: {wms: ...boolean, wfs: ...boolean} 쌍으로 만들기 ***/
+    const [checked, setChecked] = useState(() =>
+        Object.fromEntries(
+            layerKeys.map(key => [
+                key,
+                { wms: false, wfs: false }
+            ])
+        )
+    );
+
+   /*** layers 의 모든 레이어 지도에 올리기 ***/
+   useEffect(() => {
+       layerKeys.forEach(key => {
+           layers[key].wms.setMap(baroEMap);
+           layers[key].wfs.setMap(baroEMap);
+       });
+   }, [baroEMap, layers]);
+
+    /*** layers 의 모든 레이어의 노출 여부 체크박스 상태 변경 감지 및 반영 ***/
     useEffect(() => {
-        examLayer0001.setMap(baroEMap);
-        examLayer0002.setMap(baroEMap);
-    }, [baroEMap]);
-
-
-    /*** TODO : toggle 하는 형식 중복 없도록 변경 ***/
-    useEffect(() => {
-        toggleLayer(baroEMap, examLayer0001, isCheckedExamLayer0001);
-    }, [baroEMap, examLayer0001, isCheckedExamLayer0001]);
-
-    useEffect(() => {
-        toggleLayer(baroEMap, examLayer0002, isCheckedExamLayer0002);
-    }, [baroEMap, examLayer0002, isCheckedExamLayer0002]);
+        layerKeys.forEach(key => {
+            toggleLayer(baroEMap, layers[key].wms, checked[key].wms);
+            toggleLayer(baroEMap, layers[key].wfs, checked[key].wfs);
+        });
+    }, [baroEMap, layers, checked]);
 
     return (
         <>
-            <div style={{padding: "0.5rem"}} >
-                <label>
+            <div style={{padding: "0.5rem"}}  >
+                <label className="fw-bold">
                     Geoserver Layer
                 </label>
-                <div>
-                    <div>
-                        <input
-                            type="checkbox"
-                            className="btn-check al"
-                            id="chk-layer-0001"
-                            checked={isCheckedExamLayer0001}
-                            onChange={() => setIsCheckedExamLayer0001(prev => !prev)}
-                        />
-                        <label
-                            className={`btn btn-outline-secondary ${isCheckedExamLayer0001 ? 'active' : ''}`}
-                            htmlFor="chk-layer-0001"
-                            style={{marginLeft: "0.5rem"}}
-                        >
-                            용산구 관광지
-                        </label>
-                    </div>
-
-                    <div>
-                        <input
-                            type="checkbox"
-                            className="btn-check"
-                            id="chk-layer-0002"
-                            checked={isCheckedExamLayer0002}
-                            onChange={() => setIsCheckedExamLayer0002(prev => !prev)}
-                        />
-                        <label
-                            className={`btn btn-outline-secondary ${isCheckedExamLayer0002 ? 'active' : ''}`}
-                            htmlFor="chk-layer-0002"
-                            style={{marginLeft: "0.5rem"}}
-                        >
-                            용산구 지역특화거리
-                        </label>
-                    </div>
-
+                <div className="d-flex justify-content-start align-items-center gap-2">
+                    {layerKeys.map(key => (
+                        <div key={key}>
+                            <div>
+                                <input
+                                    type="checkbox"
+                                    checked={checked[key].wms}
+                                    onChange={() => onChangeCheckBox(key, 'wms')}
+                                />
+                                <img src={getLegendUrl(geoserverLayerList[key].layer)} alt="legend" />
+                                {geoserverLayerList[key].name}(WMS)
+                            </div>
+                            <div>
+                            <input
+                                    type="checkbox"
+                                    checked={checked[key].wfs}
+                                    onChange={() => onChangeCheckBox(key, 'wfs')}
+                                />
+                                {geoserverLayerList[key].name}(WFS)
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
             </div>
-
             <div className="infoArea" style={{marginTop: 15}}>
                 <div id="featureInfo"></div>
             </div>

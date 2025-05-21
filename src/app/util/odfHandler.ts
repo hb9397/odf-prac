@@ -15,11 +15,11 @@ export const createODfBaroEMap = (container: HTMLElement | null): any =>{
 
     odf.init('/api/proxy?url=https://developer.geon.kr/odf-config-wavus.json');
 
-    const coord = new odf.Coordinate(199312.9996, 551784.6924);
+    const coord = new odf.Coordinate(198157.209, 548203.934);
 
     const mapOption = {
         center: coord,
-        zoom: 15,
+        zoom: 14,
         projection: 'EPSG:5186',
         baroEMapURL: 'https://geon-gateway.geon.kr/map/api/map/baroemap',
         baroEMapAirURL: 'https://geon-gateway.geon.kr/map/api/map/ngisair',
@@ -48,7 +48,8 @@ export const createGeoserverLayer = (layer: string, type: 'wms'|'wfs') => {
     return odf.LayerFactory.produce('geoserver', {
         method: 'get',
         server: {
-            url: 'http://121.160.17.39:18080/geoserver',
+            //url: 'http://121.160.17.39:18080/geoserver',
+            url: 'http://localhost:18080/geoserver',
             proxyURL: '/api/proxy',
             proxyParam: 'url',
         },
