@@ -48,7 +48,7 @@ export const createGeoserverLayer = (layer: string, type: 'wms'|'wfs') => {
     return odf.LayerFactory.produce('geoserver', {
         method: 'get',
         server: {
-            url: 'http://121.160.17.39:8080/geoserver',
+            url: 'http://121.160.17.39:18080/geoserver',
             proxyURL: '/api/proxy',
             proxyParam: 'url',
         },

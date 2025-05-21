@@ -9,7 +9,7 @@ const GeoserverLayers = () => {
     const {baroEMap} = useMap();
 
     const [examLayer0001, setExamLayer0001] = useState<any | null>(createGeoserverLayer(geoserverLayerList.odfPracYp0001, 'wms'));
-    const [examLayer0002, setExamLayer0002] = useState<any | null>(createGeoserverLayer(geoserverLayerList.odfPracYp0003, 'wfs'));
+    const [examLayer0002, setExamLayer0002] = useState<any | null>(createGeoserverLayer(geoserverLayerList.odfPracYp0002, 'wfs'));
 
     const [isCheckedExamLayer0001, setIsCheckedExamLayer0001] = useState<boolean>(false);
     const [isCheckedExamLayer0002, setIsCheckedExamLayer0002] = useState<boolean>(false);
