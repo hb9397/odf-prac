@@ -5,8 +5,9 @@ import {useBaroEMap} from "@/app/components/baro-e-map-provider";
 
 const GeoserverLayers = () => {
     const { baroEMap } = useBaroEMap();
+    const [isOnWmsLayers, setIsOnWmsLayers] = useState<boolean>(true);
+    const [isOnWfsLayers, setIsOnWfsLayers] = useState<boolean>(true);
 
-    const [layerType, setLayerType] = useState<string>('wms');
 
     /*** geoserver wms feature 생성 ***/
     const constructInfoDiv = (list: any, selector: any) => {
@@ -67,33 +68,57 @@ const GeoserverLayers = () => {
         target.append(featureTable);
     };
 
-
     useEffect(() => {
         const odf = (window as any)?.odf;
+        console.log(baroEMap);
         // wms/wfs 레이어 생성
-        const geoserverLayer = odf.LayerFactory.produce('geoserver', {
+        const wmsLayer = odf.LayerFactory.produce('geoserver', {
             method : 'get',
-            /*
             server:{
-                url:'http://localhost:18080/geoserver',
+                url:'http://localhost:8080/geoserver',
                 proxyURL : '/api/proxy',
                 proxyParam : 'url',
             },
-            layer : 'odf-prac:yongsan-poi-gis',
+            layer : 'odf-prac:yp0001',
             service : 'wms',
-            */
+            /*
             server:{
                 url:'https://geoserver.geon.kr/geoserver',
                 proxyURL : '/api/proxy',
                 proxyParam : 'url',
             },
             layer : 'geonpaas:L100000258',
-            service : layerType,
+            service : 'wms',
+            */
             geometryName : 'the_geom',
             geometryType : 'MultiPolygon',
         });
-        geoserverLayer.setMap(baroEMap);
-        geoserverLayer.fit();
+        wmsLayer.setMap(baroEMap);
+        baroEMap.switchLayer(wmsLayer.getODFId(), isOnWmsLayers);
+
+        const wfsLayer = odf.LayerFactory.produce('geoserver', {
+            method : 'get',
+            server:{
+                url:'http://localhost:8080/geoserver',
+                proxyURL : '/api/proxy',
+                proxyParam : 'url',
+            },
+            layer : 'odf-prac:yp0003',
+            service : 'wfs',
+            /*
+            server:{
+                url:'https://geoserver.geon.kr/geoserver',
+                proxyURL : '/api/proxy',
+                proxyParam : 'url',
+            },
+            layer : 'geonpaas:L100000258',
+            service : 'wfs',
+            */
+            geometryName : 'the_geom',
+            geometryType : 'MultiPolygon',
+        });
+        wfsLayer.setMap(baroEMap);
+        baroEMap.switchLayer(wfsLayer.getODFId(), isOnWfsLayers);
 
         // 피처 속성 조회
         odf.event.addListener(baroEMap, 'click', (evt: any) => {
@@ -119,13 +144,20 @@ const GeoserverLayers = () => {
 
         });
 
-    }, [baroEMap, layerType]);
+    }, [baroEMap, isOnWmsLayers, isOnWfsLayers]);
 
     return (
-        <div className="infoArea" style={{marginTop: 15}}>
-            {/* eslint-disable-next-line @typescript-eslint/no-unused-expressions */}
-            <div id="featureInfo"><button onClick={()=>{(layerType === "wms" ? setLayerType("wfs"): setLayerType("wms"))}}>테스트</button></div>
-        </div>
+        <>
+            <div style={{marginTop: 15, padding: "0.5rem"}}>
+                <button onClick={() => setIsOnWmsLayers(!isOnWmsLayers)}
+                        style={{border: "1px solid white"}} type="button" className="btn btn-secondary">용산구 관광지</button>
+                <button onClick={() => setIsOnWfsLayers(!isOnWfsLayers)}
+                    style={{border: "1px solid white", marginLeft: "0.5rem"}} type="button" className="btn btn-secondary">용산구 지역특화거리</button>
+            </div>
+            <div className="infoArea" style={{marginTop: 15}}>
+                <div id="featureInfo"></div>
+            </div>
+        </>
     );
 };
 
