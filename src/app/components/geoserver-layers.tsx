@@ -1,7 +1,7 @@
 "use client";
 
 import React, {ChangeEvent, useEffect, useState} from 'react';
-import {createGeoserverLayer, createGeoserverWfsLayerStyle, setOpacityLayer, toggleLayer} from "../util/odfHandler";
+import {createGeoserverLayer, setOpacityLayer, toggleLayer} from "../util/odfHandler";
 import { geoserverLayerList } from "@/lib/odfGeoserverLayerList";
 import {useMap} from "@/app/components/map-provider";
 
@@ -46,7 +46,7 @@ const GeoserverLayers = () => {
     const [layers, setLayers] = useState(() =>
         Object.fromEntries(
             layerKeys.map(key => [
-                key, createGeoserverLayer(geoserverLayerList[key].layer, geoserverLayerList[key].type)
+                key, createGeoserverLayer(geoserverLayerList[key])
             ])
         )
     );
@@ -73,9 +73,6 @@ const GeoserverLayers = () => {
    useEffect(() => {
        layerKeys.forEach(key => {
            layers[key].setMap(baroEMap);
-           if(geoserverLayerList[key].type === 'wfs'){
-               createGeoserverWfsLayerStyle(layers[key], geoserverLayerList[key].style)
-           }
        });
    }, [baroEMap, layers]);
 
