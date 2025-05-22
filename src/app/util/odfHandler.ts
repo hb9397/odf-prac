@@ -70,3 +70,15 @@ export const toggleLayer = (map: any, layer: any, isChecked: boolean) => {
 
     map.switchLayer(layer?.getODFId?.(), isChecked);
 }
+
+/*** layer 객체, 투명도 N% 를 파라미터로 받아 layer 에서는 0 ~ 1로 얼마나 보여줄지에 대해 처리 ***/
+export const setOpacityLayer = (layer: any, transparent: string) => {
+    if (!layer || !(Number(transparent) >= 0 && Number(transparent) <= 100)) {
+        console.error("layer is not defined or opacity is wrong");
+        return;
+    }
+
+    const opacity = 1 - (Number(transparent) / 100);
+
+    layer.setOpacity(opacity);
+}

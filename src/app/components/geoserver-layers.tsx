@@ -1,7 +1,7 @@
 "use client";
 
-import React, {useEffect, useState} from 'react';
-import {createGeoserverLayer, toggleLayer} from "../util/odfHandler";
+import React, {ChangeEvent, useEffect, useState} from 'react';
+import {createGeoserverLayer, setOpacityLayer, toggleLayer} from "../util/odfHandler";
 import {geoserverLayerList} from "@/lib/odfGeoserverLayerList";
 import {useMap} from "@/app/components/map-provider";
 
@@ -20,6 +20,25 @@ const GeoserverLayers = () => {
             }
         }));
     };
+
+    /*** opacity 의 모든 layerKey 에 접근해서 key 에 맞도록 setOpacity ***/
+    const onChangeTransparent = (key: string, type: "wms" | "wfs", transparent: string) => {
+
+        if(Number(transparent) < 0){
+            transparent = "0"
+        }
+
+        if(Number(transparent) > 100){
+            transparent = "100";
+        }
+
+        setTransparent(prev => ({
+            ...prev,
+            [key]: { ...prev[key],
+                [type]: transparent
+            }
+        }))
+    }
 
     /*** TODO URL 분리해서 상수로 관리 ***/
     /*** <img> src 범례 가져오기 ***/
@@ -50,6 +69,16 @@ const GeoserverLayers = () => {
         )
     );
 
+    /*** geoserverLayerList 에 존재하는 모든 레이어의 투명도 상태 관리 객체를 layerKey: {wms: ..number, wfs: ...number} 쌍으로 만들기 ***/
+    const [transparent, setTransparent] = useState(() =>
+        Object.fromEntries(
+            layerKeys.map(key => [
+                key,
+                { wms: "0", wfs: "0" }
+            ])
+        )
+    );
+
    /*** layers 의 모든 레이어 지도에 올리기 ***/
    useEffect(() => {
        layerKeys.forEach(key => {
@@ -65,6 +94,14 @@ const GeoserverLayers = () => {
             toggleLayer(baroEMap, layers[key].wfs, checked[key].wfs);
         });
     }, [baroEMap, layers, checked]);
+
+    /*** layers 의 모든 레이어의 투명도 상태 변경 감지 및 반영 ***/
+    useEffect(() => {
+        layerKeys.forEach(key => {
+            setOpacityLayer(layers[key].wms, transparent[key].wms);
+            setOpacityLayer(layers[key].wfs, transparent[key].wfs);
+        });
+    }, [layers, transparent]);
 
     return (
         <>
@@ -82,6 +119,11 @@ const GeoserverLayers = () => {
                                     onChange={() => onChangeCheckBox(key, 'wms')}
                                 />
                                 <img src={getLegendUrl(geoserverLayerList[key].layer)} alt="legend" />
+                                <input type="number"
+                                       value={transparent[key].wms}
+                                       onChange={(e:ChangeEvent<HTMLInputElement>) => onChangeTransparent(key, 'wms', e.target.value)}
+                                       style={{width: "15%", border: "1px solid black"}}
+                                />
                             </div>
                             <div className="d-flex align-items-center">
                                 <input
@@ -90,6 +132,11 @@ const GeoserverLayers = () => {
                                     onChange={() => onChangeCheckBox(key, 'wfs')}
                                 />
                                 <p style={{fontSize: ".8rem", margin: "0 0 0 .5rem"}}>{geoserverLayerList[key].name}(WFS)</p>
+                                <input type="number"
+                                       value={transparent[key].wfs}
+                                       onChange={(e:ChangeEvent<HTMLInputElement>) => onChangeTransparent(key, 'wfs', e.target.value)}
+                                       style={{width: "15%", border: "1px solid black", marginLeft: ".75rem"}}
+                                />
                             </div>
                         </div>
                     ))}
