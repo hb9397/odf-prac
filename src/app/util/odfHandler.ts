@@ -1,5 +1,6 @@
+/*** TODO createODfBaroEMap mapOption 도 분리해서 파라미터로 받아 처리 ***/
+/*** TODO URL 분리해서 상수로 관리 ***/
 /*** DOM 을 파라미터로 받아 DOM 의 HTML 에 접근해 Map 생성 및 렌더링하는 메서드  ***/
-/*** TODO : mapOption 도 분리해서 파라미터로 받아 처리 ***/
 export const createODfBaroEMap = (container: HTMLElement | null): any =>{
     if (typeof window === "undefined") {
         console.error("window is undefined");
@@ -48,8 +49,8 @@ export const createGeoserverLayer = (layer: string, type: 'wms'|'wfs') => {
     return odf.LayerFactory.produce('geoserver', {
         method: 'get',
         server: {
-            //url: 'http://121.160.17.39:18080/geoserver',
-            url: 'http://localhost:18080/geoserver',
+            url: 'http://121.160.17.39:18080/geoserver',
+            //url: 'http://localhost:18080/geoserver',
             proxyURL: '/api/proxy',
             proxyParam: 'url',
         },
