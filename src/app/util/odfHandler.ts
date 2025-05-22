@@ -1,5 +1,7 @@
 /*** TODO createODfBaroEMap mapOption 도 분리해서 파라미터로 받아 처리 ***/
 /*** TODO URL 분리해서 상수로 관리 ***/
+import {geoserverLayerList} from "@/lib/odfGeoserverLayerList";
+
 /*** DOM 을 파라미터로 받아 DOM 의 HTML 에 접근해 Map 생성 및 렌더링하는 메서드  ***/
 export const createODfBaroEMap = (container: HTMLElement | null): any =>{
     if (typeof window === "undefined") {
@@ -54,8 +56,8 @@ export const createGeoserverLayer = (layerInfo: any) => {
     const geoserverLayer = odf.LayerFactory.produce('geoserver', {
         method: 'get',
         server: {
-            url: 'http://121.160.17.39:18080/geoserver',
-            //url: 'http://localhost:18080/geoserver',
+            //url: 'http://121.160.17.39:18080/geoserver',
+            url: 'http://localhost:18080/geoserver',
             proxyURL: '/api/proxy',
             proxyParam: 'url',
         },
@@ -67,17 +69,8 @@ export const createGeoserverLayer = (layerInfo: any) => {
 
     /*** Geoserver Wfs 레이어 스타일 생성하는 부분 추가 ***/
     if(layerInfo?.type === "wfs"){
-        if (layerInfo?.style?.text) {
-            layerInfo.style.text.text = `텍스트: ${layerInfo.layer}`;
-        }
-        if (geoserverLayer?.getFeatures()) {
-            console.log(geoserverLayer.getODFId());
-            console.log(geoserverLayer);
-        }
-        const geoserverWfsLayerStyle = odf.StyleFactory.produce(layerInfo.style);
-        geoserverLayer.setStyle(geoserverWfsLayerStyle);
+        setWfsLayerStyle(odf, geoserverLayer, layerInfo.style);
     }
-
 
     return geoserverLayer;
 }
@@ -103,3 +96,19 @@ export const setOpacityLayer = (layer: any, transparent: string) => {
 
     layer.setOpacity(opacity);
 }
+
+/*** Geoserver Wfs 레이어 스타일(심볼, 라벨) 생성 및 setter 하는 부분 추가 ***/
+const setWfsLayerStyle = (odf: any, wfsLayer: any, wfsLayerStyle: any) => {
+    const wfsLayerStyleFunc = odf.StyleFactory.produceFunction([
+        {
+            seperatorFunc: "default",
+            style: wfsLayerStyle,
+            callbackFunc: (style: any, feature: any) => {
+                const featureKeys = Object.keys(feature.getProperties())
+                const labelKey = featureKeys[1]
+                style.getText().setText(feature.getProperties()[labelKey] + "");
+            },
+        },
+    ]);
+    wfsLayer.setStyle(wfsLayerStyleFunc);
+};
