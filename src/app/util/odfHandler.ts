@@ -33,7 +33,7 @@ export const createODfBaroEMap = (container: HTMLElement | null): any =>{
 }
 
 /*** layer 명, layerType(service) 를 파라미터로 받아 geoserver Layer 생성하는 메서드 ***/
-export const createGeoserverLayer = (layer: string, type: 'wms'|'wfs') => {
+export const createGeoserverLayer = (layer: string, type: string) => {
     if (typeof window === "undefined") {
         console.error("window is undefined");
         return;
@@ -41,6 +41,11 @@ export const createGeoserverLayer = (layer: string, type: 'wms'|'wfs') => {
 
     if(typeof (window as any).odf === "undefined") {
         console.error("odf is undefined");
+        return;
+    }
+
+    if(!(type === "wms" || type === "wfs")) {
+        console.error("type is wrong");
         return;
     }
 
@@ -59,6 +64,30 @@ export const createGeoserverLayer = (layer: string, type: 'wms'|'wfs') => {
         geometryName: 'the_geom',
         geometryType: 'MultiPolygon',
     });
+}
+
+/*** Geoserver Wfs 레이어 스타일 생성하는 메서드 ***/
+export const createGeoserverWfsLayerStyle = (layer: any, style: any) => {
+    if (!layer || !style) {
+        console.error("layer or wfsStyle is not defined");
+        return;
+    }
+
+    if (typeof window === "undefined") {
+        console.error("window is undefined");
+        return;
+    }
+
+    if(typeof (window as any).odf === "undefined") {
+        console.error("odf is undefined");
+        return;
+    }
+
+    const odf = (window as any)?.odf;
+
+    const wfsStyle = odf.StyleFactory.produce(style);
+
+    layer.setStyle(wfsStyle);
 }
 
 /*** map 객체, layer 객체, on/off 여부를 파라미터로 받아 layer on/off 처리 메서드 ***/
