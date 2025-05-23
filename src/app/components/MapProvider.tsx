@@ -9,8 +9,6 @@ type MapContext = {
     baroEMap: any | null;
 }
 
-let map;
-
 const MapContext = createContext<MapContext>({baroEMap: null});
 
 export const useMap = () => useContext(MapContext);
@@ -20,14 +18,14 @@ const MapProvider = ({children}: {children: React.ReactNode}) => {
     const [baroEMap, setBaroEMap] = useState<any | null>(null);
 
     useEffect(() => {
-        map = createODfBaroEMap(mapRef.current);
+        const map = createODfBaroEMap(mapRef.current);
         console.log(map);
         if (map) {
             setBaroEMap(map);
             const odf = (window as any).odf;
 
             let marker: any = null;
-
+            (window as any).map = map;
             odf.event.addListener(map, 'click', (evt: any) => {
 
                 if(marker && marker.getMap()){
@@ -40,9 +38,9 @@ const MapProvider = ({children}: {children: React.ReactNode}) => {
                     pixel: evt.pixel
                 });
 
-                console.log(result);
-
                 const filteredResult = Object.entries(result).filter(([_, v]: any) => v.features.length > 0);
+
+                console.log(filteredResult);
 
                 if (filteredResult.length === 0) return;
 
@@ -60,6 +58,8 @@ const MapProvider = ({children}: {children: React.ReactNode}) => {
                     stopEvent: true,
                 });
 
+                console.log(marker);
+
                 marker.setMap(map);
             })
         }
@@ -67,7 +67,7 @@ const MapProvider = ({children}: {children: React.ReactNode}) => {
 
     return (
         <MapContext.Provider value={{baroEMap}}>
-            <div id="map" ref={mapRef} style={{height: "80vh"}} className="odf-view"></div>
+            <div id="mapView" ref={mapRef} style={{height: "80vh"}} className="odf-view"></div>
             {baroEMap && children}
         </MapContext.Provider>
     );
