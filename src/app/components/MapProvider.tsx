@@ -33,13 +33,14 @@ const MapProvider = ({children}: {children: React.ReactNode}) => {
                 }
 
                 const result = map.selectFeature({
-                    pointBuffer: 20,
+                    pointBuffer: 100,
                     extractType: 'pixel',
                     pixel: evt.pixel
                 });
 
                 const filteredResult = Object.entries(result).filter(([_, v]: any) => v.features.length > 0);
 
+                console.log(result);
                 console.log(filteredResult);
 
                 if (filteredResult.length === 0) return;
