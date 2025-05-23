@@ -1,6 +1,10 @@
+import ReactDOMServer from 'react-dom/server';
+import FeaturePopup from '../components/FeaturePopup';
+import React from "react";
+
 /*** TODO createODfBaroEMap mapOption 도 분리해서 파라미터로 받아 처리 ***/
 /*** TODO URL 분리해서 상수로 관리 ***/
-import {geoserverLayerList} from "@/lib/odfGeoserverLayerList";
+/*** TODO setWfsLayerStyle 메서드 Object.keys() 안쓰는 구조로 ***/
 
 /*** DOM 을 파라미터로 받아 DOM 의 HTML 에 접근해 Map 생성 및 렌더링하는 메서드  ***/
 export const createODfBaroEMap = (container: HTMLElement | null): any =>{
@@ -35,7 +39,7 @@ export const createODfBaroEMap = (container: HTMLElement | null): any =>{
 }
 
 /*** layer 명, layerType(service) 를 파라미터로 받아 geoserver Layer 생성하는 메서드 ***/
-export const createGeoserverLayer = (layerInfo: any) => {
+export const createGeoserverLayer = (layerInfo: any, map: any) => {
     if (typeof window === "undefined") {
         console.error("window is undefined");
         return;
@@ -56,8 +60,8 @@ export const createGeoserverLayer = (layerInfo: any) => {
     const geoserverLayer = odf.LayerFactory.produce('geoserver', {
         method: 'get',
         server: {
-            //url: 'http://121.160.17.39:18080/geoserver',
-            url: 'http://localhost:18080/geoserver',
+            url: 'http://121.160.17.39:18080/geoserver',
+            //url: 'http://localhost:18080/geoserver',
             proxyURL: '/api/proxy',
             proxyParam: 'url',
         },
@@ -71,6 +75,48 @@ export const createGeoserverLayer = (layerInfo: any) => {
     if(layerInfo?.type === "wfs"){
         setWfsLayerStyle(odf, geoserverLayer, layerInfo.style);
     }
+
+    /*** layer 생성시, Feature Marker 추가 ***/
+    let marker: any = null;
+
+    /*** map 클릭 시, 해당 위치 feature 조회 이벤트 리스너 추가 ***/
+    odf.event.addListener(map, 'click', (evt: any) => {
+
+        console.log(map, evt);
+
+        if(marker && marker.getMap()){
+            marker.removeMap();
+        }
+
+        const result = map.selectFeature({
+            pointBuffer: 20,
+            extractType: 'pixel',
+            pixel: evt.pixel
+        });
+
+        console.log(result);
+        console.log(result);
+
+        const filteredResult = Object.entries(result).filter(([_, v]: any) => v.features.length > 0);
+
+        if (filteredResult.length === 0) return;
+
+        const properties = (filteredResult[0][1] as any).features[0].getProperties();
+        const featurePopup = React.createElement(FeaturePopup, { properties });
+        const htmlString = ReactDOMServer.renderToString(featurePopup);
+
+        const container = document.createElement('div');
+        container.innerHTML = htmlString;
+
+        marker = new odf.Marker({
+            position: evt.coordinate,
+            style: { element: container },
+            draggable: false,
+            stopEvent: true,
+        });
+
+        marker.setMap(map);
+    })
 
     return geoserverLayer;
 }

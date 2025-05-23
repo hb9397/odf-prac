@@ -1,7 +1,7 @@
 'use client';
 
 import React, {useEffect, useRef, useState} from 'react';
-import {useMap} from "@/app/components/map-provider";
+import {useMap} from "@/app/components/MapProvider";
 
 const VworldWmsLayers = () => {
     const { baroEMap } = useMap();

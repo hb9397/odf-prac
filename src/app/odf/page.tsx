@@ -1,6 +1,6 @@
-import MapProvider from "@/app/components/map-provider";
-import VworldWmsLayers from "@/app/components/vworld-wms-layers";
-import GeoserverLayers from "@/app/components/geoserver-layers";
+import MapProvider from "@/app/components/MapProvider";
+import VworldWmsLayers from "@/app/components/VworldWmsLayers";
+import GeoserverLayers from "@/app/components/GeoserverLayers";
 
 const Page = () => {
     return (

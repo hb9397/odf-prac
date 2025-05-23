@@ -32,7 +32,7 @@ html, body {
   overflow: hidden;
 }
 
-/* 피처 속성 정보 조회 css */
+/* 피처 속성 정보 조회 css 시작 */
 #featureInfo>div,#featureInfo>div>div{
   padding : 10px;
 }
@@ -51,6 +51,42 @@ html, body {
   padding: 3px !important;
   text-align: center;
 }
+/* 피처 속성 정보 조회 css 끝 */
+
+/* 피처를 클릭하여 속성 정보 확인하기 시작 */
+#popup {
+  background-color: white;
+  padding : 5px;
+}
+#popup div{
+  display:none;
+}
+
+#popup div.active{
+  display:block;
+}
+
+#popup ul{
+  margin-bottom: 5px;
+  list-style: none;
+  display: flex;
+}
+#popup li{
+  font-weight : bold;
+  padding: 0px 5px;
+}
+#popup li.active{
+  color : blue;
+}
+#popup table{
+  width:100%
+}
+#popup td {
+  border: 1px solid #949494 !important;
+  padding: 3px !important;
+  text-align: center;
+}
+/* 피처를 클릭하여 속성 정보 확인하기 끝 */
 
 .ml-1{
   margin-left: .25rem !important;
