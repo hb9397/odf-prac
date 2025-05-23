@@ -24,24 +24,21 @@ const MapProvider = ({children}: {children: React.ReactNode}) => {
             setBaroEMap(map);
             const odf = (window as any).odf;
 
-            let marker: any = null;
+
             (window as any).map = map;
             odf.event.addListener(map, 'click', (evt: any) => {
-
+                /*let marker: any = null;
                 if(marker && marker.getMap()){
                     marker.removeMap();
                 }
 
                 const result = map.selectFeature({
-                    pointBuffer: 100,
-                    extractType: 'cql',
-                    //pixel: evt.pixel
+                    pointBuffer: 5,
+                    extractType: 'afwe',
+                    cql: evt.cql,
                 });
 
                 const filteredResult = Object.entries(result).filter(([_, v]: any) => v.features.length > 0);
-
-                console.log(result);
-                console.log(filteredResult);
 
                 if (filteredResult.length === 0) return;
 
@@ -61,7 +58,9 @@ const MapProvider = ({children}: {children: React.ReactNode}) => {
 
                 console.log(marker);
 
-                marker.setMap(map);
+                marker.setMap(map);*/
+                let feature = map.selectFeatureOnClick(evt);
+                console.log(feature);
             })
         }
     }, []);
