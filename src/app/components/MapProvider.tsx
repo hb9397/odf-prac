@@ -24,18 +24,29 @@ const MapProvider = ({children}: {children: React.ReactNode}) => {
             setBaroEMap(map);
             const odf = (window as any).odf;
 
+            let marker: any = null;
 
             (window as any).map = map;
+
             odf.event.addListener(map, 'click', (evt: any) => {
-                /*let marker: any = null;
+
                 if(marker && marker.getMap()){
                     marker.removeMap();
                 }
 
+                const x = evt.coordinate[0];
+                const y = evt.coordinate[1];
+
+                const buffer = 20;
+                const minX = x - buffer;
+                const maxX = x + buffer;
+                const minY = y - buffer;
+                const maxY = y + buffer;
+
                 const result = map.selectFeature({
-                    pointBuffer: 5,
-                    extractType: 'afwe',
-                    cql: evt.cql,
+                    pointBuffer: 20,
+                    extractType: 'cql',
+                    cql: `BBOX(the_geom, ${minX}, ${minY}, ${maxX}, ${maxY}, 'EPSG:5186')`
                 });
 
                 const filteredResult = Object.entries(result).filter(([_, v]: any) => v.features.length > 0);
@@ -58,9 +69,7 @@ const MapProvider = ({children}: {children: React.ReactNode}) => {
 
                 console.log(marker);
 
-                marker.setMap(map);*/
-                let feature = map.selectFeatureOnClick(evt);
-                console.log(feature);
+                marker.setMap(map);
             })
         }
     }, []);
