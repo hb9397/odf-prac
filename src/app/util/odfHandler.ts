@@ -1,11 +1,10 @@
-import ReactDOMServer from 'react-dom/server';
 import FeaturePopup from '../components/FeaturePopup';
 import React from "react";
+import ReactDOM from 'react-dom/client'
 
 /*** TODO createODfBaroEMap mapOption 도 분리해서 파라미터로 받아 처리 ***/
 /*** TODO URL 분리해서 상수로 관리 ***/
 /*** TODO setWfsLayerStyle 메서드 Object.keys() 안쓰는 구조로 ***/
-
 
 
 /*** DOM 을 파라미터로 받아 DOM 의 HTML 에 접근해 Map 생성 및 렌더링하는 메서드  ***/
@@ -37,48 +36,7 @@ export const createODfBaroEMap = (container: HTMLDivElement | null): any =>{
         },
     };
 
-    const stateMap = new odf.Map(container, mapOption);
-
-    /*** map 생성시, Feature Marker 추가 ***/
-    // let marker: any = null;
-
-    /*** map 클릭 시, 해당 위치 feature 조회 이벤트 리스너 추가 ***/
-    /*odf.event.addListener(map, 'click', (evt: any) => {
-
-        if(marker && marker.getMap()){
-            marker.removeMap();
-        }
-
-        const result = map.selectFeature({
-            pointBuffer: 20,
-            extractType: 'pixel',
-            pixel: evt.pixel
-        });
-
-        console.log(result);
-
-        const filteredResult = Object.entries(result).filter(([_, v]: any) => v.features.length > 0);
-
-        if (filteredResult.length === 0) return;
-
-        const properties = (filteredResult[0][1] as any).features[0].getProperties();
-        const featurePopup = React.createElement(FeaturePopup, { properties });
-        const htmlString = ReactDOMServer.renderToString(featurePopup);
-
-        const container = document.createElement('div');
-        container.innerHTML = htmlString;
-
-        marker = new odf.Marker({
-            position: evt.coordinate,
-            style: { element: container },
-            draggable: false,
-            stopEvent: true,
-        });
-
-        marker.setMap(map);
-    })*/
-
-    return stateMap
+    return new odf.Map(container, mapOption);
 }
 
 /*** layer 명, layerType(service) 를 파라미터로 받아 geoserver Layer 생성하는 메서드 ***/
@@ -103,8 +61,8 @@ export const createGeoserverLayer = (layerInfo: any) => {
     const geoserverLayer = odf.LayerFactory.produce('geoserver', {
         method: 'get',
         server: {
-            url: 'http://121.160.17.39:18080/geoserver',
-            //url: 'http://localhost:18080/geoserver',
+            //url: 'http://121.160.17.39:18080/geoserver',
+            url: 'http://localhost:18080/geoserver',
             proxyURL: '/api/proxy',
             proxyParam: 'url',
         },
@@ -144,6 +102,82 @@ export const setOpacityLayer = (layer: any, transparent: string) => {
     layer.setOpacity(opacity);
 }
 
+/*** windows 전역에 map 이란 이름으로 등록된 map 에 피처 클릭 이벤트 리스너 추가해서 피처 속성 조회 팝업 생성 ***/
+export const setFeaturePopup = () => {
+    if (typeof window === "undefined") {
+        console.error("window is undefined");
+        return;
+    }
+
+    if(typeof (window as any).odf === "undefined") {
+        console.error("odf is undefined");
+        return;
+    }
+
+    const odf = (window as any).odf;
+
+    let marker : any = null;
+
+    // 여기서 사용하는 map 은 전역변수(window.map)!!!!
+    odf.event.addListener(map, 'click', (evt: any) => {
+
+        if(marker && marker.getMap()){
+            marker.removeMap();
+        }
+
+        const x = evt.coordinate[0];
+        const y = evt.coordinate[1];
+
+        const buffer = 20;
+        const minX = x - buffer;
+        const maxX = x + buffer;
+        const minY = y - buffer;
+        const maxY = y + buffer;
+
+        const result = map.selectFeature({
+            pointBuffer:30,
+            extractType: 'cql',
+            cql: `BBOX(the_geom, ${minX}, ${minY}, ${maxX}, ${maxY}, 'EPSG:5186')`
+        });
+
+
+        const filteredResult = Object.entries(result).filter(([_, v]: any) => v.features.length > 0);
+
+        if (filteredResult.length === 0) return;
+
+        const properties = (filteredResult[0][1] as any).features[0].getProperties();
+
+        const container = document.createElement('div');
+
+        document.body.appendChild(container); // marker 내에만 넣으면 detach될 수 있으니 일단 보존
+
+        const root = ReactDOM.createRoot(container);
+
+        root.render(
+            React.createElement(FeaturePopup, {
+                properties,
+                onClose: () => {
+                    if (marker) {
+                        marker.removeMap();
+                        marker = null;
+                    }
+                    root.unmount(); // React 컴포넌트 언마운트
+                    container.remove(); // DOM에서도 제거
+                },
+            })
+        );
+
+        marker = new odf.Marker({
+            position: evt.coordinate,
+            style: { element: container },
+            draggable: false,
+            stopEvent: true,
+        });
+
+        marker.setMap(map);
+    })
+}
+
 /*** Geoserver Wfs 레이어 스타일(심볼, 라벨) 생성 및 setter 하는 부분 추가 ***/
 const setWfsLayerStyle = (odf: any, wfsLayer: any, wfsLayerStyle: any) => {
     const wfsLayerStyleFunc = odf.StyleFactory.produceFunction([
@@ -159,3 +193,4 @@ const setWfsLayerStyle = (odf: any, wfsLayer: any, wfsLayerStyle: any) => {
     ]);
     wfsLayer.setStyle(wfsLayerStyleFunc);
 };
+

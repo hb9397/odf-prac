@@ -40,15 +40,16 @@ const GeoserverLayers = () => {
     /*** TODO URL 분리해서 상수로 관리 ***/
     /*** <img> src 범례 가져오기 ***/
     const getLegendUrl = (layerName: any) =>
-        `/api/proxy?url=http://121.160.17.39:18080/geoserver/odf-prac/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=${layerName}`;
-        // `/api/proxy?url=http://localhost:18080/geoserver/odf-prac/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=${layerName}`;
+        // `/api/proxy?url=http://121.160.17.39:18080/geoserver/odf-prac/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=${layerName}`;
+        `/api/proxy?url=http://localhost:18080/geoserver/odf-prac/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=${layerName}`;
 
     /*** TODO geoserverLayerList 객체에서 배열로 변경해서 Object.fromEntries 제거 ***/
-    /*** geoserverLayerList 에 존재하는 모든 레이어 layerKey:  {...layerInfo} 쌍의 객체로 만들기 ***/
+    /*** geoserverLayerList
+     에 존재하는 모든 레이어 layerKey:  {...layerInfo} 쌍의 객체로 만들기 ***/
     const [layers, setLayers] = useState(() =>
         Object.fromEntries(
             layerKeys.map(key => [
-                key, createGeoserverLayer(geoserverLayerList[key], baroEMap)
+                key, createGeoserverLayer(geoserverLayerList[key])
             ])
         )
     );
