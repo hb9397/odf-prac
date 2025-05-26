@@ -1,7 +1,7 @@
 'use client';
 
 import React, {createContext, useContext, useEffect, useRef, useState} from 'react';
-import {setDrawTool, createODfBaroEMap, setFeaturePopup,} from "../util/odfHandler";
+import {createDrawTool, createODfBaroEMap, createFeatureInfoPopup,} from "../util/odfHandler";
 
 
 type MapContext = {
@@ -22,15 +22,13 @@ const MapProvider = ({children}: {children: React.ReactNode}) => {
 
         if ((window as any).map) {
             setBaroEMap((window as any).map);
-            setFeaturePopup();
-            setDrawTool((window as any).map);
+            createDrawTool((window as any).map);
         }
     }, []);
 
     return (
         <MapContext.Provider value={{baroEMap}}>
-            <div id="mapView" ref={mapRef} style={{height: "80vh"}} className="odf-view"></div>
-            {baroEMap && children}
+            <div id="mapView" ref={mapRef} style={{height: "80vh", position: "relative" }} className="odf-view">{baroEMap && children}</div>
         </MapContext.Provider>
     );
 };

@@ -47,8 +47,8 @@ export const createGeoserverLayer = (layerInfo: any) => {
     const geoserverLayer = odf.LayerFactory.produce('geoserver', {
         method: 'get',
         server: {
-            url: 'http://121.160.17.39:18080/geoserver',
-            // url: 'http://localhost:18080/geoserver',
+            // url: 'http://121.160.17.39:18080/geoserver',
+            url: 'http://localhost:18080/geoserver',
             proxyURL: '/api/proxy',
             proxyParam: 'url',
         },
@@ -62,8 +62,6 @@ export const createGeoserverLayer = (layerInfo: any) => {
     if(layerInfo?.type === "wfs"){
         setWfsLayerStyle(odf, geoserverLayer, layerInfo.style);
     }
-
-    console.log(geoserverLayer.getCenter);
 
     return geoserverLayer;
 }
@@ -91,14 +89,15 @@ export const setOpacityLayer = (layer: any, transparent: string) => {
 }
 
 /*** 레이어 바로가기 클릭 시, layer fit  ***/
-export const setLayerFit = (layer: any) => {
+export const layerFit = (layer: any) => {
     console.log(layer);
     layer.fit();
 }
 
+/*** TODO 현재 너무 많은 행위를 하고 있어 분리 필요 ***/
 /*** windows 전역에 map 이란 이름으로 등록된 map 에 피처 클릭 이벤트 리스너 추가해서 피처 속성 조회 팝업 생성 ***/
-export const setFeaturePopup = () => {
-    if(!hasWindowOdf()) return;
+export const createFeatureInfoPopup = (isSelectFeaturePopupOn: boolean) => {
+    if(!isSelectFeaturePopupOn || !hasWindowOdf()) return;
 
     const odf = (window as any).odf;
 
@@ -152,6 +151,9 @@ export const setFeaturePopup = () => {
                         marker.removeMap();
                         marker = null;
                     }
+                    if(markerHighlightGeoJsonLayer){
+                        map.removeLayer(markerHighlightGeoJsonLayer.getODFId());
+                    }
                     root.unmount(); // React 컴포넌트 언마운트
                     container.remove(); // DOM에서도 제거
                 },
@@ -159,15 +161,20 @@ export const setFeaturePopup = () => {
         );
 
         marker = new odf.Marker({
-            position: evt.coordinate,
+            position: [evt.coordinate[0], evt.coordinate[1]+70],
             style: { element: container },
             draggable: false,
             stopEvent: true,
         });
 
         marker.setMap(map);
-        map.setCenter(new odf.Coordinate(x, y))
 
+        const featureHighlightX = (filteredResult[0][1] as any)?.features[0]?.getCenterPoint?.()[0];
+        const featureHighlightY = (filteredResult[0][1] as any)?.features[0]?.getCenterPoint?.()[1];
+
+        map.setCenter(new odf.Coordinate(featureHighlightX, featureHighlightY))
+
+        /*** 선택한 피쳐 강조를 위한 빈 geojson 레이어 생성 후, 피쳐 및 스타일 적용으로 강조 ***/
         const markerHighlightGeoJson = {
             type: 'FeatureCollection',
             features: [
@@ -178,19 +185,18 @@ export const setFeaturePopup = () => {
             },
         }
 
-        const tempGeoJson = {
+        const markerHighlightGeoJsonFeature = {
             type: 'Feature',
             geometry: {
                 type: 'Point',
-                coordinates: [x, y]
+                coordinates: [featureHighlightX, featureHighlightY]
             },
             properties: {
                 name: 'Point'
             },
         }
 
-        const tempFeature = odf.FeatureFactory.fromGeoJson(tempGeoJson);
-
+        const markerHighlightFeature = odf.FeatureFactory.fromGeoJson(markerHighlightGeoJsonFeature);
 
         markerHighlightGeoJsonLayer = odf.LayerFactory.produce('geojson'/*레이어를 생성하기위 한 테이터 호출 방법*/, {
             //geojson형식 object
@@ -202,7 +208,7 @@ export const setFeaturePopup = () => {
         });
 
 
-        markerHighlightGeoJsonLayer.addFeature(tempFeature);
+        markerHighlightGeoJsonLayer.addFeature(markerHighlightFeature);
 
         const markerHighlightGeoJsonLayerStyleFunc = odf.StyleFactory.produceFunction([
             {
@@ -210,7 +216,7 @@ export const setFeaturePopup = () => {
                 style: {
                     image: {
                         circle: {
-                            radius: 10,
+                            radius: 20,
                             fill: {
                                 color: 'transparent'
                             },
@@ -226,13 +232,11 @@ export const setFeaturePopup = () => {
         ]);
 
         markerHighlightGeoJsonLayer.setStyle(markerHighlightGeoJsonLayerStyleFunc);
-
         markerHighlightGeoJsonLayer.setMap(map);
-
     })
 }
 
-export const setDrawTool = (map: any) => {
+export const createDrawTool = (map: any) => {
     if(!hasWindowOdf()) return;
 
     const odf = (window as any)?.odf;
@@ -326,10 +330,6 @@ export const setDrawTool = (map: any) => {
         }
     });
 
-    // 지도 객체와 연결 (컨트롤 ui 생성)
-    //drawControl.setMap(baroEMap);
-
-    // 지도 객체와 연결 (컨트롤 ui 생성 x)
     drawControl.setMap(map);
 
     /*그리기 시작시 이벤트*/
