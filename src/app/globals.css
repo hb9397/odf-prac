@@ -91,3 +91,7 @@ html, body {
 .ml-1{
   margin-left: .25rem !important;
 }
+
+.basemap_basemapArea{
+  padding: 0 .5rem 0 0 !important;
+}

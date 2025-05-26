@@ -184,7 +184,7 @@ const hasWindowOdf = () => {
         return result;
     }
 
-    if(typeof (window as any).odf === "undefined") {
+    if(typeof (window as any)?.odf === "undefined") {
         console.error("odf is undefined");
         return result;
     }
