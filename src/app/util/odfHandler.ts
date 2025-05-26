@@ -9,15 +9,8 @@ import ReactDOM from 'react-dom/client'
 
 /*** DOM 을 파라미터로 받아 DOM 의 HTML 에 접근해 Map 생성 및 렌더링하는 메서드  ***/
 export const createODfBaroEMap = (container: HTMLDivElement | null): any =>{
-    if (typeof window === "undefined") {
-        console.error("window is undefined");
-        return;
-    }
 
-    if(typeof (window as any).odf === "undefined") {
-        console.error("odf is undefined");
-        return;
-    }
+    if(!hasWindowOdf()) return;
 
     const odf = (window as any).odf;
 
@@ -41,15 +34,8 @@ export const createODfBaroEMap = (container: HTMLDivElement | null): any =>{
 
 /*** layer 명, layerType(service) 를 파라미터로 받아 geoserver Layer 생성하는 메서드 ***/
 export const createGeoserverLayer = (layerInfo: any) => {
-    if (typeof window === "undefined") {
-        console.error("window is undefined");
-        return;
-    }
 
-    if(typeof (window as any).odf === "undefined") {
-        console.error("odf is undefined");
-        return;
-    }
+    if(!hasWindowOdf()) return;
 
     if(!(layerInfo?.type === "wms" || layerInfo?.type === "wfs")) {
         console.error("type is wrong");
@@ -61,8 +47,8 @@ export const createGeoserverLayer = (layerInfo: any) => {
     const geoserverLayer = odf.LayerFactory.produce('geoserver', {
         method: 'get',
         server: {
-            //url: 'http://121.160.17.39:18080/geoserver',
-            url: 'http://localhost:18080/geoserver',
+            url: 'http://121.160.17.39:18080/geoserver',
+            // url: 'http://localhost:18080/geoserver',
             proxyURL: '/api/proxy',
             proxyParam: 'url',
         },
@@ -82,7 +68,7 @@ export const createGeoserverLayer = (layerInfo: any) => {
 
 /*** map 객체, layer 객체, on/off 여부를 파라미터로 받아 layer on/off 처리 메서드 ***/
 export const toggleLayer = (map: any, layer: any, isChecked: boolean) => {
-    if (!map || !layer || typeof layer.getODFId !== 'function'){
+    if (typeof map === 'undefined' || typeof layer.getODFId === 'undefined') {
         console.error("map or layer is not defined");
         return;
     }
@@ -92,7 +78,7 @@ export const toggleLayer = (map: any, layer: any, isChecked: boolean) => {
 
 /*** layer 객체, 투명도 N% 를 파라미터로 받아 layer 에서는 0 ~ 1로 얼마나 보여줄지에 대해 처리 ***/
 export const setOpacityLayer = (layer: any, transparent: string) => {
-    if (!layer || !(Number(transparent) >= 0 && Number(transparent) <= 100)) {
+    if (typeof layer === "undefined" || !(Number(transparent) >= 0 && Number(transparent) <= 100)) {
         console.error("layer is not defined or opacity is wrong");
         return;
     }
@@ -104,15 +90,7 @@ export const setOpacityLayer = (layer: any, transparent: string) => {
 
 /*** windows 전역에 map 이란 이름으로 등록된 map 에 피처 클릭 이벤트 리스너 추가해서 피처 속성 조회 팝업 생성 ***/
 export const setFeaturePopup = () => {
-    if (typeof window === "undefined") {
-        console.error("window is undefined");
-        return;
-    }
-
-    if(typeof (window as any).odf === "undefined") {
-        console.error("odf is undefined");
-        return;
-    }
+    if(!hasWindowOdf()) return;
 
     const odf = (window as any).odf;
 
@@ -175,6 +153,7 @@ export const setFeaturePopup = () => {
         });
 
         marker.setMap(map);
+        map.setCenter(new odf.Coordinate(x, y))
     })
 }
 
@@ -193,4 +172,25 @@ const setWfsLayerStyle = (odf: any, wfsLayer: any, wfsLayerStyle: any) => {
     ]);
     wfsLayer.setStyle(wfsLayerStyleFunc);
 };
+
+
+/*** window.odf 접근 가능 유효성 검증 ***/
+const hasWindowOdf = () => {
+
+    let result: boolean = false;
+
+    if (typeof window === "undefined") {
+        console.error("window is undefined");
+        return result;
+    }
+
+    if(typeof (window as any).odf === "undefined") {
+        console.error("odf is undefined");
+        return result;
+    }
+
+    result = true;
+
+    return result;
+}
 
