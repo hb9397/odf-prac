@@ -95,3 +95,8 @@ html, body {
 .basemap_basemapArea{
   padding: 0 .5rem 0 0 !important;
 }
+
+.toolbar {
+  border-radius: 4px;
+  margin-top: 43rem;
+}

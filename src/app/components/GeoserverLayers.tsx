@@ -2,7 +2,7 @@
 "use client";
 
 import React, {ChangeEvent, useEffect, useState} from 'react';
-import {createGeoserverLayer, setOpacityLayer, toggleLayer} from "../util/odfHandler";
+import {createGeoserverLayer, setLayerFit, setOpacityLayer, toggleLayer} from "../util/odfHandler";
 import { geoserverLayerList } from "@/lib/odfGeoserverLayerList";
 import {useMap} from "@/app/components/MapProvider";
 
@@ -119,6 +119,10 @@ const GeoserverLayers = () => {
                                        onChange={(e:ChangeEvent<HTMLInputElement>) => onChangeTransparent(key, e.target.value)}
                                        style={{marginLeft: ".5rem", width: "50%", border: "1px solid black"}}
                                 />
+                            </div>
+                            <div className="mt-2 d-flex justify-content-start align-items-center">
+                                <button type="button" style={{border: "1px solid black", width: "71%"}} onClick={() => {layers[key].fit(15)
+                                }}>레이어 바로가기</button>
                             </div>
                         </div>
                     ))}

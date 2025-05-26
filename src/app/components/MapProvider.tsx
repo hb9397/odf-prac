@@ -1,7 +1,7 @@
 'use client';
 
 import React, {createContext, useContext, useEffect, useRef, useState} from 'react';
-import {createODfBaroEMap, setFeaturePopup,} from "../util/odfHandler";
+import {setDrawTool, createODfBaroEMap, setFeaturePopup,} from "../util/odfHandler";
 
 
 type MapContext = {
@@ -14,6 +14,7 @@ export const useMap = () => useContext(MapContext);
 
 const MapProvider = ({children}: {children: React.ReactNode}) => {
     const mapRef = useRef<HTMLDivElement | null>(null);
+
     const [baroEMap, setBaroEMap] = useState<any | null>(null);
 
     useEffect(() => {
@@ -22,6 +23,7 @@ const MapProvider = ({children}: {children: React.ReactNode}) => {
         if ((window as any).map) {
             setBaroEMap((window as any).map);
             setFeaturePopup();
+            setDrawTool((window as any).map);
         }
     }, []);
 

@@ -191,9 +191,9 @@ export const setBasemapWidgetThme = (theme: any, map: any, widgetContainer: HTML
 }
 
 /*** 그리기 & 측정 도구 생성 ***/
-export const createDrawAndMeasureWidget = (map: any, drawToolWidgetRef: HTMLLIElement|null, measureToolWidgetRef: HTMLLIElement|null, clearToolWidgetRef: HTMLLIElement|null ) => {
+/*export const createDrawAndMeasureWidget = (map: any, drawToolWidgetRef: HTMLLIElement|null, measureToolWidgetRef: HTMLLIElement|null, clearToolWidgetRef: HTMLLIElement|null ) => {
 
-}
+}*/
 
 /*** window.odf, window.oui 접근 가능 유효성 검증 ***/
 const hasWindowOdfAndOui = () => {
