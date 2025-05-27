@@ -47,8 +47,8 @@ export const createGeoserverLayer = (layerInfo: any) => {
     const geoserverLayer = odf.LayerFactory.produce('geoserver', {
         method: 'get',
         server: {
-            // url: 'http://121.160.17.39:18080/geoserver',
-            url: 'http://localhost:18080/geoserver',
+            url: 'http://121.160.17.39:18080/geoserver',
+            // url: 'http://localhost:18080/geoserver',
             proxyURL: '/api/proxy',
             proxyParam: 'url',
         },
@@ -332,17 +332,6 @@ export const createDrawTool = (map: any) => {
 
     drawControl.setMap(map);
 
-    /*그리기 시작시 이벤트*/
-    odf.event.addListener(drawControl, 'drawstart', function(feature: any) {
-        console.log("drawstart");
-    });
-
-    /*그리기 종료시 이벤트*/
-    odf.event.addListener(drawControl, 'drawend', function(feature: any) {
-        console.log("drawend");
-        console.log(drawLayer);
-    });
-
     //텍스트 그리기
     //drawControl.drawText();
     //폴리곤 그리기
@@ -366,6 +355,17 @@ export const createDrawTool = (map: any) => {
     //그리기 인터렉션 삭제 및 그리기 오버레이 삭제, 그리던 도형 삭제
     //drawControl.clear()
 
+
+    /*그리기 시작시 이벤트*/
+    odf.event.addListener(drawControl, 'drawstart', (feature: any) => {
+        console.log("drawstart");
+    });
+
+    /*그리기 종료시 이벤트*/
+    odf.event.addListener(drawControl, 'drawend', (feature: any) => {
+        console.log("drawend");
+        console.log(drawLayer);
+    })
 
     /*그리기 초기화 컨트롤 생성*/
     const clearControl = new odf.ClearControl();

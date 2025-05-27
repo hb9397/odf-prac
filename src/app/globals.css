@@ -91,16 +91,23 @@ html, body {
 .ml-1{
   margin-left: .25rem !important;
 }
+.toolbar {
+  position: absolute !important;
+  height: 70vh !important;
+  border-radius: 4px !important;
+  display: flex;
+  flex-direction: row;
+  align-items: end !important;
+}
+
+.basemapWidget{
+  border-radius: 4px !important;
+}
 
 .basemap_basemapArea{
   padding: 0 .5rem 0 0 !important;
 }
 
-.toolbar {
-  position: absolute !important;
-  height: 68vh !important;
-  border-radius: 4px !important;
-  display: flex;
-  flex-direction: row;
-  align-items: end !important;
+.basemap_toolbox{
+  top: -2.5rem !important;
 }
