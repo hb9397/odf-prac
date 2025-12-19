@@ -20,7 +20,7 @@
               <CssParameter name="stroke-width">1</CssParameter>
             </Stroke>
           </PolygonSymbolizer>
-          </Rule>
+        </Rule>
       </FeatureTypeStyle>
     </UserStyle>
   </NamedLayer>
