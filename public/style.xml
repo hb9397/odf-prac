@@ -1,16 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld">
-  <NamedLayer>
-    <Name>ned:dt_d160</Name>
-    <UserStyle>
-      <FeatureTypeStyle>
-        <Rule>
-          <PolygonSymbolizer>
-            <Fill><CssParameter name="fill">#AAAAAA</CssParameter></Fill>
-            <Stroke><CssParameter name="stroke">#000000</CssParameter></Stroke>
-          </PolygonSymbolizer>
-        </Rule>
-      </FeatureTypeStyle>
-    </UserStyle>
-  </NamedLayer>
-</StyledLayerDescriptor>
+<NamedLayer>
+  <Name>dt_d160</Name> <UserStyle>
+    <FeatureTypeStyle>
+      <Rule>
+        <PolygonSymbolizer>
+          <Fill><CssParameter name="fill">#AAAAAA</CssParameter></Fill>
+          <Stroke><CssParameter name="stroke">#000000</CssParameter></Stroke>
+        </PolygonSymbolizer>
+      </Rule>
+    </FeatureTypeStyle>
+  </UserStyle>
+</NamedLayer>
