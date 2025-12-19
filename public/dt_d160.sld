@@ -20,22 +20,7 @@
               <CssParameter name="stroke-width">1</CssParameter>
             </Stroke>
           </PolygonSymbolizer>
-          
-          <TextSymbolizer>
-            <Label>
-              <ogc:Literal> </ogc:Literal> </Label>
-            <Fill>
-              <CssParameter name="fill">#000000</CssParameter>
-              <CssParameter name="fill-opacity">0.0</CssParameter> </Fill>
-            <Halo>
-              <Fill>
-                <CssParameter name="fill-opacity">0.0</CssParameter>
-              </Fill>
-            </Halo>
-            <VendorOption name="group">yes</VendorOption>
-            <VendorOption name="conflictResolution">true</VendorOption>
-          </TextSymbolizer>
-        </Rule>
+          </Rule>
       </FeatureTypeStyle>
     </UserStyle>
   </NamedLayer>
