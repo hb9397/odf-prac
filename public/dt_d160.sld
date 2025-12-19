@@ -11,15 +11,14 @@
       <FeatureTypeStyle>
         <Rule>
           <PolygonSymbolizer>
-            <Fill>
-              <CssParameter name="fill">#AAAAAA</CssParameter>
-              <CssParameter name="fill-opacity">0.7</CssParameter>
-            </Fill>
-            <Stroke>
-              <CssParameter name="stroke">#000000</CssParameter>
-              <CssParameter name="stroke-width">1</CssParameter>
-            </Stroke>
+            <Fill><CssParameter name="fill">#AAAAAA</CssParameter></Fill>
+            <Stroke><CssParameter name="stroke">#000000</CssParameter></Stroke>
           </PolygonSymbolizer>
+          <TextSymbolizer>
+            <Label><ogc:Literal> </ogc:Literal></Label>
+            <Fill><CssParameter name="fill-opacity">0.0</CssParameter></Fill>
+            <Halo><Fill><CssParameter name="fill-opacity">0.0</CssParameter></Fill></Halo>
+          </TextSymbolizer>
         </Rule>
       </FeatureTypeStyle>
     </UserStyle>
