@@ -12,13 +12,13 @@
         <Rule>
           <PolygonSymbolizer>
             <Fill><CssParameter name="fill">#00FFFF</CssParameter></Fill>
-            <Stroke><CssParameter name="stroke">#0000FF</CssParameter></Stroke>
+            <Stroke><CssParameter name="stroke">#0000FF</CssParameter><CssParameter name="stroke-width">3</CssParameter></Stroke>
           </PolygonSymbolizer>
           <TextSymbolizer>
             <Label><ogc:PropertyName>uname</ogc:PropertyName></Label>
             <Font>
               <CssParameter name="font-family">Malgun Gothic</CssParameter>
-              <CssParameter name="font-size">20</CssParameter>
+              <CssParameter name="font-size">18</CssParameter>
               <CssParameter name="font-weight">bold</CssParameter>
             </Font>
             <Fill><CssParameter name="fill">#800080</CssParameter></Fill>
