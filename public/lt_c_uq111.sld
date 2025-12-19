@@ -6,35 +6,23 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
   <NamedLayer>
-    <Name>lt_c_uq111</Name> <UserStyle>
+    <Name>lt_c_uq111</Name>
+    <UserStyle>
       <FeatureTypeStyle>
         <Rule>
           <PolygonSymbolizer>
-            <Fill>
-              <CssParameter name="fill">#FF0000</CssParameter>
-              <CssParameter name="fill-opacity">0.8</CssParameter>
-            </Fill>
-            <Stroke>
-              <CssParameter name="stroke">#0000FF</CssParameter>
-              <CssParameter name="stroke-width">5</CssParameter>
-            </Stroke>
+            <Fill><CssParameter name="fill">#00FFFF</CssParameter></Fill>
+            <Stroke><CssParameter name="stroke">#0000FF</CssParameter></Stroke>
           </PolygonSymbolizer>
-          
           <TextSymbolizer>
-            <Label>
-               <ogc:PropertyName>uname</ogc:PropertyName> </Label>
+            <Label><ogc:PropertyName>uname</ogc:PropertyName></Label>
             <Font>
               <CssParameter name="font-family">Malgun Gothic</CssParameter>
-              <CssParameter name="font-size">18</CssParameter>
+              <CssParameter name="font-size">20</CssParameter>
               <CssParameter name="font-weight">bold</CssParameter>
             </Font>
-            <Fill>
-              <CssParameter name="fill">#FF0000</CssParameter>
-            </Fill>
-            <Halo>
-              <Radius>2</Radius>
-              <Fill><CssParameter name="fill">#FFFFFF</CssParameter></Fill>
-            </Halo>
+            <Fill><CssParameter name="fill">#800080</CssParameter></Fill>
+            <Halo><Radius>2</Radius><Fill><CssParameter name="fill">#FFFFFF</CssParameter></Fill></Halo>
           </TextSymbolizer>
         </Rule>
       </FeatureTypeStyle>
